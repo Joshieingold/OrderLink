@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { auth } from "../database/firebase";
+import { auth } from "../General/database/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import "./loginpage.css"; // Import your CSS file for styling
+import  LogoFrame  from "../General/logoFrame/logoFrame";
 
 
 export const LoginPage = () => {
@@ -38,6 +39,7 @@ export const LoginPage = () => {
 
     return (
         <div className="login-page">
+            <LogoFrame/>
             <form className="login-form" onSubmit={handleLogin}>
                 <div className="text-container">
                     <h1 className="login-title">Sign in</h1>
@@ -69,6 +71,7 @@ export const LoginPage = () => {
                             type="checkbox"
                             checked={rememberMe}
                             onChange={(e) => setRememberMe(e.target.checked)}
+                            className="remember-me-checkbox"
                         />
                         Remember me
                     </label>

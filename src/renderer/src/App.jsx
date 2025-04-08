@@ -1,7 +1,7 @@
 import React from 'react'
 import { LoginPage } from './components/loginpage/loginpage'
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import RequireAuth from './components/General/navbar/requireAuth/requireAuth';
+import RequireAuth from './components/General/requireAuth/requireAuth';
 function App() {
 
 

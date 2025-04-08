@@ -9,9 +9,11 @@
 .login-page {
     display: flex;
     width: 100vw;
-    height: 100vh;
-    justify-content: center;
+    height: 60vh;
+    justify-content: space-around;
     align-items: center;
+    flex-direction: column;
+    justify-self: center;
 }
 .input {
     display: flex;
@@ -27,14 +29,7 @@
     padding: 0.5rem;
     border-radius: 0.3rem;
 }
-.remember-me-container   {
-    display: flex;
-    align-items: right;
-    justify-content: left; 
-    font-size: 1.1rem;
-    width: 80%;
 
-}
 .login-button {
     background-color: #050505c0;
     color: white;
@@ -57,3 +52,26 @@
         transition: 0.6s;
     }
 }
+.text-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+}
+.remember-me-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95rem;
+    color: #cfcfcf;
+    margin-bottom: 8px;
+    width: 90%;
+    
+  }
+  
+  .remember-me-checkbox {
+    width: 16px;
+    height: 16px;
+    accent-color: #056eaa; /* Customize checkbox color */
+    cursor: pointer;
+    margin-right: 10px;
+  }
