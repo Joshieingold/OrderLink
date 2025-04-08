@@ -2,35 +2,39 @@ import { useState, useEffect } from "react";
 import { auth } from "../General/database/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import "./loginpage.css"; // Import your CSS file for styling
-import  LogoFrame  from "../General/logoFrame/logoFrame";
-
+import "./loginpage.css";
+import LogoFrame from "../General/logoFrame/logoFrame";
 
 export const LoginPage = () => {
-    const [email, setEmail] = useState(localStorage.getItem("savedEmail") || ""); // Pre-fill email if saved
+    const [email, setEmail] = useState(localStorage.getItem("savedEmail") || "");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
-    const [rememberMe, setRememberMe] = useState(false); // State for the "Remember Me" checkbox
+    const [rememberMe, setRememberMe] = useState(false);
+    const [isLoggingIn, setIsLoggingIn] = useState(false); // Animation trigger
     const navigate = useNavigate();
 
-    // Handle login
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
             await signInWithEmailAndPassword(auth, email, password);
-            // Save email to localStorage if "Remember Me" is checked
             if (rememberMe) {
                 localStorage.setItem("savedEmail", email);
             } else {
                 localStorage.removeItem("savedEmail");
             }
-            navigate("/Home");
+
+            setIsLoggingIn(true); // Trigger animation
+
+            // Wait for animation to complete
+            setTimeout(() => {
+                navigate("/Home");
+            }, 600); // Match the duration of your CSS animation
+
         } catch (err) {
             setError("Invalid email or password.");
         }
     };
 
-    // Effect to handle changes in the "Remember Me" checkbox
     useEffect(() => {
         if (!rememberMe) {
             localStorage.removeItem("savedEmail");
@@ -38,8 +42,8 @@ export const LoginPage = () => {
     }, [rememberMe]);
 
     return (
-        <div className="login-page">
-            <LogoFrame/>
+        <div className={`login-page ${isLoggingIn ? "fade-out" : ""}`}>
+            <LogoFrame />
             <form className="login-form" onSubmit={handleLogin}>
                 <div className="text-container">
                     <h1 className="login-title">Sign in</h1>
@@ -79,8 +83,6 @@ export const LoginPage = () => {
                 {error && <p className="error">Login failed, please try again</p>}
                 <button type="submit" className="login-button">Sign in</button>
             </form>
-        </div>    
+        </div>
     );
 };
-
-    
