@@ -4,7 +4,7 @@
     left: 0;
     height: 100vh;
     width: 60px;
-    background-color: #1e1e1e;
+    background-color: #1e1e1ecd;
     transition: width 0.3s ease;
     overflow: hidden;
     z-index: 1000;
@@ -48,5 +48,5 @@
 }
 
 .nav-link:hover {
-    color: #ff5252;
+    color: #4cd2d0;
 }
