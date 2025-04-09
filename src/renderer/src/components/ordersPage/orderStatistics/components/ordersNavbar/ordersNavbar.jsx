@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import './ordersNavbar.css'
 
 const navItems = [
-  { label: 'Statistics', path: '/Orders' },
+  { label: 'Overview', path: '/Orders' },
   { label: 'Review', path: '/OrderReview' },
   { label: 'History', path: '/OrderHistory' }
 ]
