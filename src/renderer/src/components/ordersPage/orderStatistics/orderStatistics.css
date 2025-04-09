@@ -8,24 +8,42 @@
 }
 .two-bubble-container {
     width: 70vw;
-    height: 40vh;
+    min-height: 40vh;
     gap:2rem;
     display: flex;
     justify-content: center;
     flex-direction: row;
     margin-bottom: 2rem;
+    max-height: fit-content;
     
 }
 .one-bubble-container {
-    width: 70vw;
+    width: 85vw;
     height: 50vh;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
     margin-bottom: 2rem;
+    
 }
  .big {
     display: flex;
+
     flex-direction: column;
+}
+.chart-container {
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    
+}
+.Checkbox-Text {
+    margin-right: 10px;
+}
+.title-text-big {
+    text-align: center;
 }

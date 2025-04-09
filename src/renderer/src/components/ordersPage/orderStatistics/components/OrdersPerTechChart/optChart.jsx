@@ -1,5 +1,7 @@
 import { Bar } from "react-chartjs-2";
 import React, { useEffect, useState } from "react";
+
+import "../../../../General/General.css";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -137,20 +139,22 @@ const OptChart = ({ data }) => {
       {/* Date Filters */}
       <div className="filter-section">
         <div className="date-filter-section">
-          <label>
+          <label className="date-filter-label">
             Start Date:{" "}
             <input
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
+              className="date-box"
             />
           </label>
-          <label style={{ marginLeft: "10px" }}>
+          <label className="date-filter-label"> 
             End Date:{" "}
             <input
               type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
+              className="date-box"
             />
           </label>
         </div>
@@ -200,7 +204,7 @@ const OptChart = ({ data }) => {
       {loading ? (
         <p>Loading...</p>
       ) : chartData ? (
-        <Bar data={chartData} options={options} />
+        <Bar className="bar-data" data={chartData} options={options} />
       ) : (
         <p>No data to display</p>
       )}

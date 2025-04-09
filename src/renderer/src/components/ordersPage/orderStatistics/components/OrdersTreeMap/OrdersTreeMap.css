@@ -105,6 +105,6 @@
 .date-box {
   background-color: rgba(0, 0, 0, 0.185);
   color: rgb(177, 177, 177);
-  border: 1px solid white;
+  border: 1px solid rgb(133, 133, 133);
   border-radius: 0.2rem;
 }

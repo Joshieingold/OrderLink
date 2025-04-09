@@ -38,7 +38,7 @@ const OrderStatisticsPage = () => {
       transition={{ duration: 0.5 }}
     >
       <Navbar />
-      <h1 className='main-title-text'>Orders Overview</h1>
+      <h1 className='main-title-text'>Order Overview</h1>
       <div className="two-bubble-container">
         <div className="bubble">
           {loading ? <p>Loading chart...</p> : <OptChart data={data} />}

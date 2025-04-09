@@ -143,23 +143,25 @@ const DptChart = ({ data }) => {
       {/* Date Filter Section */}
       <div className="filter-section">
         <div className="date-filter-section">
-          <label>
+          <label className="date-filter-label">
             Start Date:
             <input
               type="date"
               value={dateFilter.start}
+              className="date-box"
               onChange={(e) =>
                 setDateFilter((prev) => ({ ...prev, start: e.target.value }))
               }
             />
           </label>
-          <label>
+          <label className="date-filter-label">
             End Date:
             <input
               type="date"
               value={dateFilter.end}
+              className="date-box"
               onChange={(e) =>
-                setDateFilter((prev) => ({ ...prev, end: e.target.value }))
+              setDateFilter((prev) => ({ ...prev, end: e.target.value }))
               }
             />
           </label>
