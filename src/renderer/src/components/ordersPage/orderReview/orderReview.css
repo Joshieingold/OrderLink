@@ -5,4 +5,16 @@
     align-items: center;
     justify-content: center;
     flex-direction: column;
+    margin-left: 5vw;
+}
+.card-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.card-container {
+    width: 90%;
 }
