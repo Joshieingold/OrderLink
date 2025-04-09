@@ -1,0 +1,31 @@
+.order-statistics-page {
+    height: 100%;
+    width: 95vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+.two-bubble-container {
+    width: 70vw;
+    height: 40vh;
+    gap:2rem;
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    margin-bottom: 2rem;
+    
+}
+.one-bubble-container {
+    width: 70vw;
+    height: 50vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    margin-bottom: 2rem;
+}
+ .big {
+    display: flex;
+    flex-direction: column;
+}
