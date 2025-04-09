@@ -137,6 +137,7 @@ const DptChart = ({ data }) => {
   };
 
   return (
+    
     <div className="chart-container">
       <h2 className="title-text">Devices Received</h2>
 
