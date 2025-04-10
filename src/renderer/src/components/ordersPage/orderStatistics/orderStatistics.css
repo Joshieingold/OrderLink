@@ -5,27 +5,27 @@
     align-items: center;
     justify-content: center;
     flex-direction: column;
+    margin-left: 5vw;;
 }
 .two-bubble-container {
-    min-width: 40%;
-    max-width: 85vw;
+    min-width: 70%;
     min-height: 40vh;
     gap:2rem;
     display: flex;
     justify-content: center;
     flex-direction: row;
-    margin-bottom: 2rem;
     max-height: fit-content;
+    margin-top: 2vh;
     
 }
 .one-bubble-container {
     width: 85vw;
-    height: 50vh;
+    height: 40vh;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    margin-bottom: 2rem;
+    margin-top: 2vh;
     
 }
  .big {
