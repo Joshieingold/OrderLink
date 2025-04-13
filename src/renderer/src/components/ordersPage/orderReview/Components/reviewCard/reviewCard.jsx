@@ -30,8 +30,8 @@ export const ReviewCard = ({ orderId, name, location, waybill, devices, boxes, s
 
                         <button className="close-btn" onClick={(e) => { e.stopPropagation(); onClose(); }}>✕</button>
                         <button className='edit-btn'>Edit</button>
-                        <button className='send-btn'>Send</button>
-                        <button className='delete-btn'>Delete</button>
+                        <button className='send-btn'>Submit</button>
+                        <button className='delete-btn'>Remove</button>
                     </div>
                 </div>
             )}

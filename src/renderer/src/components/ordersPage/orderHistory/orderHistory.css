@@ -5,6 +5,7 @@
     align-items: center;
     justify-content: center;
     flex-direction: column;
+    margin-left: 5vw;;
 }
 .order-history-wrapper {
     opacity: 0;
