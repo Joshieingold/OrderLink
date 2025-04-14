@@ -13,17 +13,42 @@ export const OrderReview = () => {
     useEffect(() => {
         fetchTempOrdersData()
             .then(data => {
-                const updated = data.map((order, index) => ({
-                    ...order,
-                    OrderID: order.OrderID || `temp-${Date.now()}-${index}`
-                }));
+                const seen = new Set();
+                const updated = data.map((order, index) => {
+                    const rawId = order.OrderID || `temp-${Date.now()}-${index}`;
+                    let uniqueKey = rawId;
+                    if (seen.has(uniqueKey)) {
+                        uniqueKey += `-${index}`; // ensure uniqueness
+                    }
+                    seen.add(uniqueKey);
+                    return { ...order, rawId, uniqueKey };
+                });
                 setOrders(updated);
             })
             .catch(console.error);
     }, []);
 
-    const activeOrder = orders.find(order => order.OrderID === expandedId);
-    const otherOrders = orders.filter(order => order.OrderID !== expandedId);
+    // Function to refresh the data in the parent component
+    const refreshData = () => {
+        fetchTempOrdersData()
+            .then(data => {
+                const seen = new Set();
+                const updated = data.map((order, index) => {
+                    const rawId = order.OrderID || `temp-${Date.now()}-${index}`;
+                    let uniqueKey = rawId;
+                    if (seen.has(uniqueKey)) {
+                        uniqueKey += `-${index}`; // ensure uniqueness
+                    }
+                    seen.add(uniqueKey);
+                    return { ...order, rawId, uniqueKey };
+                });
+                setOrders(updated);
+            })
+            .catch(console.error);
+    };
+
+    const activeOrder = orders.find(order => order.rawId === expandedId);
+    const otherOrders = orders.filter(order => order.rawId !== expandedId);
 
     return (
         <div className="order-review-page">
@@ -40,27 +65,29 @@ export const OrderReview = () => {
                 <AnimatePresence mode="wait">
                     <motion.div
                         layout
-                        key={activeOrder ? activeOrder.OrderID : "placeholder"}
+                        key={activeOrder ? activeOrder.uniqueKey : "placeholder"}
                         className="active-card-box"
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.95 }}
-                        transition={{ duration: 0.6 }}
+                        transition={{ duration: 0.5 }}
                     >
                         {activeOrder ? (
                             <ReviewCard
-                                orderId={activeOrder.OrderID}
-                                name={activeOrder.Technician}
-                                location={activeOrder.Location}
-                                waybill={activeOrder.Waybill || "N/A"}
-                                devices={activeOrder.Devices || {}}
-                                boxes={activeOrder.Boxes || 0}
-                                skids={activeOrder.Skids || 0}
-                                date={activeOrder.DateCompleted || Date()}
-                                isExpanded={true}
-                                onClick={() => {}}
-                                onClose={() => setExpandedId(null)}
-                            />
+                            orderId={activeOrder.rawId}
+                            name={activeOrder.Technician}
+                            location={activeOrder.Location}
+                            waybill={activeOrder.Waybill || "N/A"}
+                            devices={activeOrder.Devices || {}}
+                            boxes={activeOrder.Boxes || 0}
+                            skids={activeOrder.Skids || 0}
+                            date={activeOrder.DateCompleted || new Date().toLocaleDateString()}
+                            note={activeOrder.Note}
+                            isExpanded={true}
+                            onClick={() => {}}
+                            onClose={() => setExpandedId(null)}
+                            onDeleteSuccess={refreshData} // ✅ FIXED: Make sure it's onDeleteSuccess
+                        />
                         ) : (
                             <div className="placeholder-content">
                                 <p className="placeholder-text">No order selected</p>
@@ -75,24 +102,25 @@ export const OrderReview = () => {
                 <AnimatePresence>
                     {otherOrders.map(order => (
                         <motion.div
-                            key={order.OrderID}
+                            key={order.uniqueKey}
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.9 }}
                             transition={{ duration: 0.5 }}
                         >
                             <ReviewCard
-                                orderId={order.OrderID}
+                                orderId={order.rawId}
                                 name={order.Technician}
                                 location={order.Location}
                                 waybill={order.Waybill || "N/A"}
                                 devices={order.Devices || {}}
                                 boxes={order.Boxes || 0}
                                 skids={order.Skids || 0}
-                                date={order.DateCompleted || Date()}
+                                date={order.DateCompleted || new Date().toLocaleDateString()}
                                 isExpanded={false}
-                                onClick={() => setExpandedId(order.OrderID)}
+                                onClick={() => setExpandedId(order.rawId)}
                                 onClose={() => {}}
+                                onUpdate={refreshData} // Pass onUpdate to refresh data
                             />
                         </motion.div>
                     ))}

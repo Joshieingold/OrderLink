@@ -18,3 +18,7 @@ if (process.contextIsolated) {
   window.electron = electronAPI
   window.api = api
 }
+const testManager = require("../renderer/src/components/General/database/databaseManager.jsx");
+const getNames = () => {
+  return testManager.getNames();
+}

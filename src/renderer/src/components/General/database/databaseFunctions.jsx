@@ -2,7 +2,7 @@ import { endOfWeek, format, startOfWeek, eachDayOfInterval, isWithinInterval } f
 import { collection, getDocs, query, where, orderBy, limit } from "firebase/firestore";
 import { db } from "./firebase"; // Firestore instance
 import { Timestamp, addDoc } from "firebase/firestore";
-
+import { deleteDoc, doc } from "firebase/firestore";
 export const fetchOrdersData = async () => {
     try {
         const deliveryRef = collection(db, "DeliveryTracker");
@@ -21,7 +21,7 @@ export const fetchOrdersData = async () => {
                 : new Date(); // Default to current date if not present
             const weight = order.Weight || 0;
             const location = order.Location || "Unknown";
-            const orderNumber = order.ID || "Unknown";
+            const orderNumber = order.OrderID || "Unknown";
             const skids = order.Skids || 1/24;
             const techName = order.TechName || "Unknown";
             const waybill = order.Waybill || "Unknown";
@@ -73,6 +73,7 @@ export const fetchTempOrdersData = async () => {
                 Technician: order.TechName ?? "Unknown",
                 Waybill: order.Waybill ?? "Unknown",
                 Devices: order.Devices ?? {},
+                Note: order.Note ?? "No note associated with this order."
             });
         });
 
@@ -162,4 +163,30 @@ export const sendOrderData = async (order) => {
         console.error("Error adding order to database:", error);
         throw error;
     }
+};
+
+export const deleteOrderByOrderIdField = async (orderId) => {
+ if (!orderId) {
+   console.error("No order ID provided");
+   return;
+ }
+
+ try {
+   const q = query(collection(db, "orders"), where("orderId", "==", orderId));
+   const querySnapshot = await getDocs(q);
+
+   if (querySnapshot.empty) {
+     console.warn(`No documents found with orderId: ${orderId}`);
+     return;
+   }
+
+   const deletePromises = querySnapshot.docs.map((docSnap) => {
+     return deleteDoc(doc(db, "orders", docSnap.id));
+   });
+
+   await Promise.all(deletePromises);
+   console.log(`Deleted ${deletePromises.length} document(s) with orderId ${orderId}`);
+ } catch (error) {
+   console.error("Error deleting order(s):", error);
+ }
 };
