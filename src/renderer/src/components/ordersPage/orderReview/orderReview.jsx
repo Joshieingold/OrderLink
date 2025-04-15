@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Navbar } from "../../General/navbar/navbar";
 import OrdersNavbar from "../orderStatistics/components/ordersNavbar/ordersNavbar";
@@ -5,10 +6,14 @@ import { ActiveOrder } from "./Components/activeOrder/activeOrder";
 import { fetchTempOrdersData } from "../../General/database/databaseFunctions";
 import { MiniOrder } from "./Components/miniOrder/miniOrder";
 import { AnimatePresence, motion } from 'framer-motion';
+import { EditOrder } from "./Components/activeOrder/activeOrder";
+import { ChangeTempOrder } from "../../General/database/databaseFunctions";
 import "./orderReview.css";
+import { se } from "date-fns/locale";
 export const OrderReview = () => {
     const [activeOrder, setActiveOrder] = useState(null);
     const [orderData, setOrderData] = useState([]); // Initialize orderData with an empty array
+    const [isEditing, setIsEditing] = useState(false);
 
     // Function to fetch data
     const RefreshData = async () => {
@@ -19,7 +24,12 @@ export const OrderReview = () => {
         setActiveOrder(doc)
         window.scrollTo({ top: 0, behavior: "smooth" });
     }
-
+    const UpdateActiveOrder = async (orderRef) => {
+        await ChangeTempOrder(activeOrder);
+        setActiveOrder(null); // Reset active order after update
+        setIsEditing(false); // Reset editing state
+        RefreshData(); // Refresh data after update
+    }
     useEffect(() => {
         RefreshData(); // Fetch data when the component mounts
     }, []); // Empty dependency array means this runs once on mount
@@ -36,13 +46,25 @@ export const OrderReview = () => {
                 <AnimatePresence mode="wait">
                     {activeOrder ? (
                     <motion.div key={activeOrder.OrderID} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }} className="motion-full" >
-                        <ActiveOrder orderData={activeOrder} />
-                        <div className="order-button-container">
-                            <button className="active-order-button" onClick={() => setActiveOrder(null)}>X</button>
-                            <button className="active-order-button">Edit</button>
-                            <button className="active-order-button">Delete</button>
-                            <button className="active-order-button">Submit</button>
+                        {isEditing ? (
+                            <EditOrder orderData={activeOrder} setOrderData={setActiveOrder}/>
+                        ) : (
+                        <ActiveOrder orderData={activeOrder} /> 
+                        )}
+                        {isEditing ? (
+                            <div className="order-button-container">
+                                <button className="active-order-button" onClick={async () => await UpdateActiveOrder(activeOrder)}>Update</button>
+                                <button className="active-order-button">Submit</button>
+                            </div>
+                        ): (
+                            <div className="order-button-container">
+                                <button className="active-order-button" onClick={() => setActiveOrder(null)}>X</button>
+                                <button className="active-order-button" onClick={() => setIsEditing(true)}>Edit</button>
+                                <button className="active-order-button">Delete</button>
+                                <button className="active-order-button">Submit</button>
                         </div>
+                        )}
+                        
                     </motion.div>
                     ) : (
                     <motion.p key="no-order" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} >
@@ -61,3 +83,4 @@ export const OrderReview = () => {
 };
 
       
+

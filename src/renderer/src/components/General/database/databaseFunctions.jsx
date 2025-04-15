@@ -2,8 +2,8 @@ import { endOfWeek, format, startOfWeek, eachDayOfInterval, isWithinInterval } f
 import { collection, getDocs, query, where, orderBy, limit } from "firebase/firestore";
 import { db } from "./firebase"; // Firestore instance
 import { Timestamp, addDoc } from "firebase/firestore";
-import { deleteDoc, doc } from "firebase/firestore";
-export const fetchOrdersData = async () => {
+import { deleteDoc, doc, setDoc } from "firebase/firestore";
+export const fetchOrdersData = async () => { 
     try {
         const deliveryRef = collection(db, "DeliveryTracker");
         const querySnapshot = await getDocs(query(deliveryRef));
@@ -65,12 +65,12 @@ export const fetchTempOrdersData = async () => {
 
             orderData.push({
                 Boxes: order.Boxes ?? 1,
-                Date: dateCompleted,
+                DateCompleted: dateCompleted,
                 Weight: order.Weight ?? 0,
                 Location: order.Location ?? "Unknown",
                 OrderID: order.OrderID ?? "Unknown",
                 Skids: order.Skids ?? (1 / 24),
-                Technician: order.TechName ?? "Unknown",
+                TechName: order.TechName ?? "Unknown",
                 Waybill: order.Waybill ?? "Unknown",
                 Devices: order.Devices ?? {},
                 Note: order.Note ?? "No note associated with this order."
@@ -83,10 +83,7 @@ export const fetchTempOrdersData = async () => {
         return [];
     }
 };
-
-
-export const fetchTechData = async () => {
-    try {
+export const fetchTechData = async () => { try {
         const techRef = collection(db, "TechDatabase");
         const querySnapshot = await getDocs(query(techRef));
         if (querySnapshot.empty) {
@@ -164,7 +161,6 @@ export const sendOrderData = async (order) => {
         throw error;
     }
 };
-
 export const deleteOrderByOrderIdField = async (orderId) => {
  if (!orderId) {
    console.error("No order ID provided");
@@ -189,4 +185,45 @@ export const deleteOrderByOrderIdField = async (orderId) => {
  } catch (error) {
    console.error("Error deleting order(s):", error);
  }
+};
+export const ChangeTempOrder = async (order) => {
+    if (!order) {
+        console.log("Not sure how this happened. No order was selected to edit.");
+        return;
+    }
+
+    try {
+        const orderQuery = query(
+            collection(db, "TempOrders"),
+            where("OrderID", "==", order.OrderID)
+        );
+
+        const snapshot = await getDocs(orderQuery);
+
+        if (snapshot.empty) {
+            console.log("No documents found from query");
+            return;
+        } else if (snapshot.size > 1) {
+            console.log("More than one document found.");
+            return; // TEMP
+        } else {
+            const docRef = snapshot.docs[0].ref;
+
+            // Prepare the order object safely
+            const sanitizedOrder = {
+                ...order,
+                DateCompleted: order.DateCompleted
+                    ? Timestamp.fromDate(new Date(order.DateCompleted))
+                    : null
+            };
+
+            await setDoc(docRef, sanitizedOrder);
+            console.log("Order has been changed successfully!");
+            return;
+        }
+    } catch (error) {
+        console.log("ChangeTempOrder called with:", order);
+        console.log("There was an unexpected error:", error);
+        return;
+    }
 };
