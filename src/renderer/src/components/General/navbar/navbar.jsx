@@ -18,6 +18,7 @@ export const Navbar = () => {
             <div className={`nav-links ${isOpen ? 'show' : ''}`}>
                 <Link to="/Home" className="nav-link">Home</Link>
                 <Link to="/Orders" className="nav-link">Orders</Link>
+                <Link to="/prod" className='nav-link'>Production</Link>
                 <Link to="/Contractors" className="nav-link">Contractors</Link>
                 <Link to="/Storage" className="nav-link">Storage</Link>
                 <Link to="/" className='nav-link'>Logout</Link>

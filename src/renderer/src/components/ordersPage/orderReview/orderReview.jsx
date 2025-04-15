@@ -1,131 +1,63 @@
-import "./orderReview.css";
-import OrdersNavbar from "../orderStatistics/components/ordersNavbar/ordersNavbar";
+import { useState, useEffect } from "react";
 import { Navbar } from "../../General/navbar/navbar";
-import { useEffect, useState } from "react";
-import { fetchTempOrdersData } from "../../General/database/databaseFunctions.jsx";
-import { ReviewCard } from "./Components/reviewCard/reviewCard.jsx";
-import { AnimatePresence, motion } from "framer-motion";
-
+import OrdersNavbar from "../orderStatistics/components/ordersNavbar/ordersNavbar";
+import { ActiveOrder } from "./Components/activeOrder/activeOrder";
+import { fetchTempOrdersData } from "../../General/database/databaseFunctions";
+import { MiniOrder } from "./Components/miniOrder/miniOrder";
+import { AnimatePresence, motion } from 'framer-motion';
+import "./orderReview.css";
 export const OrderReview = () => {
-    const [orders, setOrders] = useState([]);
-    const [expandedId, setExpandedId] = useState(null);
+    const [activeOrder, setActiveOrder] = useState(null);
+    const [orderData, setOrderData] = useState([]); // Initialize orderData with an empty array
+
+    // Function to fetch data
+    const RefreshData = async () => {
+        const data = await fetchTempOrdersData();
+        setOrderData(data); // Set the fetched data to orderData state
+    };
+    const HandleMiniContainerClick = (doc) => {
+        setActiveOrder(doc)
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
 
     useEffect(() => {
-        fetchTempOrdersData()
-            .then(data => {
-                const seen = new Set();
-                const updated = data.map((order, index) => {
-                    const rawId = order.OrderID || `temp-${Date.now()}-${index}`;
-                    let uniqueKey = rawId;
-                    if (seen.has(uniqueKey)) {
-                        uniqueKey += `-${index}`; // ensure uniqueness
-                    }
-                    seen.add(uniqueKey);
-                    return { ...order, rawId, uniqueKey };
-                });
-                setOrders(updated);
-            })
-            .catch(console.error);
-    }, []);
-
-    // Function to refresh the data in the parent component
-    const refreshData = () => {
-        fetchTempOrdersData()
-            .then(data => {
-                const seen = new Set();
-                const updated = data.map((order, index) => {
-                    const rawId = order.OrderID || `temp-${Date.now()}-${index}`;
-                    let uniqueKey = rawId;
-                    if (seen.has(uniqueKey)) {
-                        uniqueKey += `-${index}`; // ensure uniqueness
-                    }
-                    seen.add(uniqueKey);
-                    return { ...order, rawId, uniqueKey };
-                });
-                setOrders(updated);
-            })
-            .catch(console.error);
-    };
-
-    const activeOrder = orders.find(order => order.rawId === expandedId);
-    const otherOrders = orders.filter(order => order.rawId !== expandedId);
+        RefreshData(); // Fetch data when the component mounts
+    }, []); // Empty dependency array means this runs once on mount
 
     return (
-        <div className="order-review-page">
+        <motion.div className="order-review-container" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.8 }} >
             <Navbar />
             <OrdersNavbar />
-            <h1 className="main-title-text">Order Review</h1>
-
-            <div className="review-button-container">
-                <button className="review-button">Create Orders</button>
+            <h1>Order Review</h1>
+            <div className="header-button-container">
+                <button>Create Order</button>
             </div>
-
-            {/* Active/Placeholder Box */}
-            <div className="active-card-wrapper">
+            <div className="active-order-container">
                 <AnimatePresence mode="wait">
-                    <motion.div
-                        layout
-                        key={activeOrder ? activeOrder.uniqueKey : "placeholder"}
-                        className="active-card-box"
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.95 }}
-                        transition={{ duration: 0.5 }}
-                    >
-                        {activeOrder ? (
-                            <ReviewCard
-                            orderId={activeOrder.rawId}
-                            name={activeOrder.Technician}
-                            location={activeOrder.Location}
-                            waybill={activeOrder.Waybill || "N/A"}
-                            devices={activeOrder.Devices || {}}
-                            boxes={activeOrder.Boxes || 0}
-                            skids={activeOrder.Skids || 0}
-                            date={activeOrder.DateCompleted || new Date().toLocaleDateString()}
-                            note={activeOrder.Note}
-                            isExpanded={true}
-                            onClick={() => {}}
-                            onClose={() => setExpandedId(null)}
-                            onDeleteSuccess={refreshData} // ✅ FIXED: Make sure it's onDeleteSuccess
-                        />
-                        ) : (
-                            <div className="placeholder-content">
-                                <p className="placeholder-text">No order selected</p>
-                            </div>
-                        )}
+                    {activeOrder ? (
+                    <motion.div key={activeOrder.OrderID} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }} className="motion-full" >
+                        <ActiveOrder orderData={activeOrder} />
+                        <div className="order-button-container">
+                            <button className="active-order-button" onClick={() => setActiveOrder(null)}>X</button>
+                            <button className="active-order-button">Edit</button>
+                            <button className="active-order-button">Delete</button>
+                            <button className="active-order-button">Submit</button>
+                        </div>
                     </motion.div>
+                    ) : (
+                    <motion.p key="no-order" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} >
+                        Select an order to review
+                    </motion.p>
+                    )}
                 </AnimatePresence>
             </div>
-
-            {/* Inactive Orders List */}
-            <div className="card-container">
-                <AnimatePresence>
-                    {otherOrders.map(order => (
-                        <motion.div
-                            key={order.uniqueKey}
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.9 }}
-                            transition={{ duration: 0.5 }}
-                        >
-                            <ReviewCard
-                                orderId={order.rawId}
-                                name={order.Technician}
-                                location={order.Location}
-                                waybill={order.Waybill || "N/A"}
-                                devices={order.Devices || {}}
-                                boxes={order.Boxes || 0}
-                                skids={order.Skids || 0}
-                                date={order.DateCompleted || new Date().toLocaleDateString()}
-                                isExpanded={false}
-                                onClick={() => setExpandedId(order.rawId)}
-                                onClose={() => {}}
-                                onUpdate={refreshData} // Pass onUpdate to refresh data
-                            />
-                        </motion.div>
-                    ))}
-                </AnimatePresence>
+            <div className="mini-order-container">
+                {orderData.map((doc, index) => (
+                    <MiniOrder key={index} doc={doc} onClick={() => {HandleMiniContainerClick(doc)}} isActive={activeOrder && doc.OrderID === activeOrder.OrderID}/>
+                ))}
             </div>
-        </div>
+        </motion.div>
     );
 };
+
+      
