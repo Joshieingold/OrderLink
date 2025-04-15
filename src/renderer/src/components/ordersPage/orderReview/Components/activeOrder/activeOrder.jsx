@@ -3,7 +3,7 @@ export const ActiveOrder = ({ orderData }) => {
     return (
         <div className="active-order-main">
             <div className="active-order">
-                <div className="info-container">
+                <div className="info-container-order">
                     <h2>ID: {orderData.OrderID}</h2>
                     <h2 className="border-title">Name: {orderData.Technician}</h2>
                     <p>Location: {orderData.Location}</p>
