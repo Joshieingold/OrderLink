@@ -1,9 +1,9 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, act } from "react";
 import { Navbar } from "../../General/navbar/navbar";
 import OrdersNavbar from "../orderStatistics/components/ordersNavbar/ordersNavbar";
 import { ActiveOrder } from "./Components/activeOrder/activeOrder";
-import { fetchTempOrdersData } from "../../General/database/databaseFunctions";
+import { DeleteTempOrder, fetchTempOrdersData, SubmitTempOrder } from "../../General/database/databaseFunctions";
 import { MiniOrder } from "./Components/miniOrder/miniOrder";
 import { AnimatePresence, motion } from 'framer-motion';
 import { EditOrder } from "./Components/activeOrder/activeOrder";
@@ -26,10 +26,21 @@ export const OrderReview = () => {
     }
     const UpdateActiveOrder = async (orderRef) => {
         await ChangeTempOrder(activeOrder);
-        setActiveOrder(null); // Reset active order after update
         setIsEditing(false); // Reset editing state
         RefreshData(); // Refresh data after update
     }
+    const HandleSubmitOrder = async () => {
+        await SubmitTempOrder(activeOrder);
+        setActiveOrder(null); // Reset active order after submission
+        setIsEditing(false); // Reset editing state
+        RefreshData(); // Refresh data after submission
+    }
+    const handleDeleteOrder = async () => {
+        await DeleteTempOrder(activeOrder);
+        setActiveOrder(null); // Reset active order after deletion
+        setIsEditing(false); // Reset editing state
+        RefreshData(); // Refresh data after deletion
+    } 
     useEffect(() => {
         RefreshData(); // Fetch data when the component mounts
     }, []); // Empty dependency array means this runs once on mount
@@ -54,14 +65,14 @@ export const OrderReview = () => {
                         {isEditing ? (
                             <div className="order-button-container">
                                 <button className="active-order-button" onClick={async () => await UpdateActiveOrder(activeOrder)}>Update</button>
-                                <button className="active-order-button">Submit</button>
+                                <button className="active-order-button" onClick={async () => await HandleSubmitOrder(activeOrder)}>Submit</button>
                             </div>
                         ): (
                             <div className="order-button-container">
                                 <button className="active-order-button" onClick={() => setActiveOrder(null)}>X</button>
                                 <button className="active-order-button" onClick={() => setIsEditing(true)}>Edit</button>
-                                <button className="active-order-button">Delete</button>
-                                <button className="active-order-button">Submit</button>
+                                <button className="active-order-button" onClick={() => handleDeleteOrder(activeOrder)}>Delete</button>
+                                <button className="active-order-button" onClick={async () => await HandleSubmitOrder(activeOrder)}>Submit</button>
                         </div>
                         )}
                         

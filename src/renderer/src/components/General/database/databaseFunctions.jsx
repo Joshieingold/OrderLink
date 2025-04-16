@@ -186,6 +186,66 @@ export const deleteOrderByOrderIdField = async (orderId) => {
    console.error("Error deleting order(s):", error);
  }
 };
+export const SubmitTempOrder = async (order) => {
+    if (!order) {
+        console.log("Not sure how this happened. No order was selected to edit.");
+        return;
+    }
+
+    try {
+        const deliveryRef = collection(db, "DeliveryTracker");
+
+        // Prepare the order object safely
+        const sanitizedOrder = {
+            ...order,
+            DateCompleted: order.DateCompleted
+                ? Timestamp.fromDate(new Date(order.DateCompleted))
+                : null
+        };
+
+        await addDoc(deliveryRef, sanitizedOrder);
+        await DeleteTempOrder(order); // Delete the temp order after submission
+        console.log("Order successfully added to DeliveryTracker with ID:", order.OrderID);
+        
+        return;
+    } catch (error) {
+        console.log("SubmitTempOrder called with:", order);
+        console.log("There was an unexpected error:", error);
+        return;
+    }
+}
+export const DeleteTempOrder = async (order) => {
+    if (!order) {
+        console.log("Not sure how this happened. No order was selected to edit.");
+        return;
+    }
+    try {
+        const orderQuery = query(
+            collection(db, "TempOrders"),
+            where("OrderID", "==", order.OrderID)
+        );
+
+        const snapshot = await getDocs(orderQuery);
+
+        if (snapshot.empty) {
+            console.log("No documents found from query");
+            return;
+        } else if (snapshot.size > 1) {
+            console.log("More than one document found.");
+            return; // TEMP
+        } else {
+            const docRef = snapshot.docs[0].ref;
+            await deleteDoc(docRef);
+            console.log("Order has been deleted successfully!");
+            return;
+        }
+    }
+    catch (error) {
+        console.log("DeleteTempOrder called with:", order);
+        console.log("There was an unexpected error:", error);
+        return;
+    }
+}
 export const ChangeTempOrder = async (order) => {
     if (!order) {
         console.log("Not sure how this happened. No order was selected to edit.");
